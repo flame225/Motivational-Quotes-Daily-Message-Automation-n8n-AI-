@@ -1,0 +1,202 @@
+{
+  "name": "Build Motivational Quotes Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -48
+      ],
+      "id": "a164f13a-8484-4e6b-8074-badd39e033c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Get a motivational quote, with no extra text",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -64,
+        -48
+      ],
+      "id": "7b0b83a4-71a1-40a4-ba85-84309af1ea32",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        160
+      ],
+      "id": "3aa10d08-d7fa-40b9-b16c-1b4a418426bd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "AGZvpj50kkGcgMTl",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email Address'] }}",
+        "subject": "Moltivational Text From Ndubuisi:",
+        "message": "={{ $('Basic LLM Chain').item.json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "3a462394-3850-4152-8d17-e3404b2ee09a",
+      "name": "Send a quote",
+      "webhookId": "d2280c01-97de-435d-9e3c-c2688336f16d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "x8OxhhMq795y4XDZ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 7,
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        -176
+      ],
+      "id": "1d1a7063-b5da-463f-b166-da97e86c7c94",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1F0AQfE3uXRkN5KgTHvNwHYDXcyzYXPGVPABrOT_UUPA",
+          "mode": "list",
+          "cachedResultName": "moltivational",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F0AQfE3uXRkN5KgTHvNwHYDXcyzYXPGVPABrOT_UUPA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1F0AQfE3uXRkN5KgTHvNwHYDXcyzYXPGVPABrOT_UUPA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        272,
+        -32
+      ],
+      "id": "0ffb1f92-b551-44ac-a661-f4a4f458e468",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CkKgB7W8bhhtqpjQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a quote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5c9b49d-260d-442c-8930-5b9f5a0abb30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b556da4a971f18079293dd8260a4d72f0d938fd6ec87f75a5f9c50bf2913852"
+  },
+  "id": "98UZo0FEv9vJ5DLD",
+  "tags": []
+}
